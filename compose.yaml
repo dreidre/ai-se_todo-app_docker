@@ -1,0 +1,41 @@
+services:
+  mongo:
+    image: mongo:7
+    volumes:
+      - mongo_data:/data/db
+
+  backend:
+    build: ./server
+    restart: unless-stopped # NEW
+    environment:
+      MONGO_URI: mongodb://mongo:27017/todos
+    depends_on:
+      - mongo
+    # Remove the port mapping
+  
+  frontend:
+    build: ./client
+    restart: unless-stopped # NEW
+    # Remove the port mapping
+
+  # New
+  caddy:
+    image: caddy:2-alpine
+    environment:
+      SITE_ADDRESS: ${SITE_ADDRESS}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - backend
+      - frontend
+
+# New volumes
+volumes:
+  mongo_data:
+  caddy_data:
+  caddy_config:
