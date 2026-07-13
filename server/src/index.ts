@@ -10,6 +10,8 @@ const MONGO_URI = process.env.MONGO_URI;
 app.use(cors());
 app.use(express.json());
 
+const unused = "this will fail lint";
+
 mongoose
   .connect(MONGO_URI!)
   .then(() => {
